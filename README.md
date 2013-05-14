@@ -7,9 +7,13 @@ Usage: $ ruby opt.rb [options]
 
 Options:
     -S, --sync                       Sync device(s)
+    
     -B, --backup                     Backup sms device
+    
     -R, --restore [ARG]              Restore sms to previous backup. ARG = 0,1,2
+    
     -O, --other [arg]                Restore sms DB from another device.
+    
     -h, --help                       Show this message
 
 
@@ -32,13 +36,17 @@ Options:
 GAPS can be downloaded from : 
 
 GITHUB link : https://github.com/techmaniack/gaps
+
 Any other link : https://github.com/techmaniack/gaps/archive/master.zip
 
 #License
 
 Copyright (C) 2013  Aakash Agrawal
+                    
                     Shashank Thakre
+                    
                     Saumil Kasbekar
+                    
                     AbdulKarim Memon
 
 This program is free software; you can redistribute it and/or
