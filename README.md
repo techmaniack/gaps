@@ -1,20 +1,19 @@
-#GAPS  version 1.0  14/05/2013
+##GAPS  version 1.0  14/05/2013
+=====
+###Generic Android PC Suit 
 
-##GENERAL USAGE NOTES
-------------------------------------
-
-Usage: $ ruby opt.rb [options]
+Usage: 
+```bash
+$ ruby opt.rb [options]
 
 Options:
+    
     -S, --sync                       Sync device(s)
-    
     -B, --backup                     Backup sms device
-    
     -R, --restore [ARG]              Restore sms to previous backup. ARG = 0,1,2
-    
     -O, --other [arg]                Restore sms DB from another device.
-    
     -h, --help                       Show this message
+```
 
 
 
@@ -25,7 +24,7 @@ Options:
 * Device is put in flight mode automatically when app is accessing the device and flight mode is removed when app is done processing with device.
 
 
-##Installing under Linux Ubuntu
+###Installing under Linux Ubuntu
 
 * The only dependancy is Ruby. 
 * There is no setup file for this application. Copy the application at a location in system.
@@ -38,28 +37,3 @@ GAPS can be downloaded from :
 GITHUB link : https://github.com/techmaniack/gaps
 
 Any other link : https://github.com/techmaniack/gaps/archive/master.zip
-
-#License
-
-Copyright (C) 2013  Aakash Agrawal
-                    
-                    Shashank Thakre
-                    
-                    Saumil Kasbekar
-                    
-                    AbdulKarim Memon
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
