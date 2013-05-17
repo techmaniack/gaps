@@ -80,9 +80,13 @@ class Gaps
         `adb -d -s #{devices[1]} shell am start -n com.example.so/.Push_sms`
 
         puts "REMOVING TEMP FILES"
-        #`rm #{phone1_file}`
-        #`rm #{phone2_file}`
-
+        sleep(2)
+        `rm #{phone1_file}`
+        `rm #{phone2_file}`
+        puts "..."
+        sleep(1)
+        `adb -d -s #{devices[0]} shell rm /mnt/sdcard/backup.xml`
+        `adb -d -s #{devices[1]} shell rm /mnt/sdcard/backup.xml`
         puts "SYNC SUCCESFULLY!"
       else
         exit
@@ -185,7 +189,8 @@ class Gaps
   ####################################################################
   ####################################################################
   def backup
-    time_stamp = `date`.gsub(" ","").chomp
+    #time_stamp = `date`.gsub(" ","").chomp
+    time_stamp = Time.now.strftime("%Y-%m-%d_%I:%M:%S")
     puts "Backup Function called...\n"
     #puts @@count
 
@@ -204,7 +209,10 @@ class Gaps
       
       `adb shell am start -n com.example.so/.Toggle_fm`
       `adb shell am start -n com.example.so/.Pull_sms`
+      puts "Pulling SMS..."
+      sleep(3)
       `adb pull /mnt/sdcard/backup.xml #{path}`
+      sleep(0.5)
       `adb shell rm /mnt/sdcard/backup.xml`
       `mv #{path}/backup.xml #{path}/#{time_stamp}.xml`
       `adb shell am start -n com.example.so/.Toggle_fm`
@@ -265,6 +273,8 @@ class Gaps
       puts "GAPS/#{@@imei}/#{list[arg.to_i]}"
       `adb push  GAPS/#{@@imei}/#{list[arg.to_i]} /mnt/sdcard/backup.xml`
       `adb shell am start -n com.example.so/.Push_sms`
+      sleep(5)
+      `adb shell rm /mnt/sdcard/backup.xml`
       puts "RESTORED SUCCESFULLY!"
     else
       exit
@@ -295,8 +305,10 @@ class Gaps
 
         `adb push #{arg} /mnt/sdcard/backup.xml`
         `adb shell am start -n com.example.so/.Push_sms`
-        #`adb shell rm /mnt/sdcard/backup.xml`
+        sleep(2)
         puts "Restore Success!!"
+        sleep(3)
+        `adb shell rm /mnt/sdcard/backup.xml`
       else
         exit
       end
