@@ -16,7 +16,7 @@ class Gaps
         puts "\nINSTALLING CLIENT ON DEVICE. DO NOT DISCONNECT!!!\n"
         `adb -d -s #{phone} install -r bin/na.apk`
       end
-    end 
+    end
   end
 
   def device_ids()
@@ -26,12 +26,10 @@ class Gaps
     ids.map! {|i| i.sub("\tdevice", "")}
     ids
   end
-  
+
   def initialize
     ##CHECK IF APK IS INSTALLED
     check_installed
-
-
 
     #No of devices connected
     adb_devices = `./bin/adb devices`
@@ -116,10 +114,11 @@ class Gaps
         `cp #{phone_file} #{db_file}`
         `rm #{phone_file}`
         puts "COPIED to SERVER. SYNC COMPLETE!!!"
-        exit
+      else
+        ##DB exists for phone
+        push_union(db_file, phone_file)
       end
-      ##DB exists for phone
-      push_union(db_file, phone_file)
+      
     end
   end
 
@@ -160,7 +159,7 @@ class Gaps
 
   def pull_both_files(ph1, ph2)
     puts devices = device_ids
-    
+
     #pull file from device 1
     puts "Pulling from device 1"
 
@@ -170,7 +169,7 @@ class Gaps
     `adb -d -s #{devices[0]} shell am start -n com.example.so/.Toggle_fm`
     `adb -d -s #{devices[0]} shell rm /mnt/sdcard/backup.xml`
 
-    
+
     #pull file from device 2
     puts "Pulling from device 2"
     `adb -d -s #{devices[1]} shell am start -n com.example.so/.Toggle_fm`
@@ -178,10 +177,10 @@ class Gaps
     `adb -d -s #{devices[1]} pull /mnt/sdcard/backup.xml #{ph2}`
     `adb -d -s #{devices[1]}  shell am start -n com.example.so/.Toggle_fm`
     `adb -d -s #{devices[1]}  shell rm /mnt/sdcard/backup.xml`
-    
+
     #puts `ls GAPS`
 
-    
+
   end
 
   ####################################################################
@@ -206,7 +205,7 @@ class Gaps
       #puts path
 
       `mkdir -p #{path}` if !File.directory?(path)
-      
+
       `adb shell am start -n com.example.so/.Toggle_fm`
       `adb shell am start -n com.example.so/.Pull_sms`
       puts "Pulling SMS..."
@@ -315,6 +314,140 @@ class Gaps
     end
   end
 
+  ####################################################################
+  ###############################CONTACTS#############################
+  ####################################################################
+  ###################################################################
+
+  ##BACKUP
+  def pull_contacts
+
+    `adb shell am start -n com.example.so/.Toggle_fm`
+    sleep(0.5)
+
+    `adb shell am start -n com.example.so/.Pull_contacts`
+    sleep(1)
+
+    `adb shell am start -n com.example.so/.Toggle_fm`
+    sleep(0.5)
+    puts "Pulling contacts!"
+    sleep(1)
+  end
+
+  def push_contacts
+   
+    #`adb shell am start -n com.example.so/.Toggle_fm`
+    sleep(0.5)
+
+   
+    `adb shell am start -n com.example.so/.Push_contacts`
+    sleep(1)
+
+   
+    #`adb shell am start -n com.example.so/.Toggle_fm`
+    sleep(0.5)
+    puts "Pushing contacts!"
+    sleep(1)
+  end
+
+  def backup_contacts
+    case @@count
+    when 0
+      puts "No device connected!!!"
+
+    when 2..100
+      puts "Multiple devices connected!!!"
+
+    when 1
+      time_stamp = Time.now.strftime("%Y-%m-%d_%I:%M:%S")
+      ##Check if directory exists
+      path = "GAPS/#{@@imei}/contacts"
+      if !File.directory?("#{path}")
+        `mkdir -p #{path}`
+      end
+
+      ##Call activity
+      pull_contacts
+      puts "Contact Pull Activity Called"
+      #Pull contacts file
+      `adb pull /mnt/sdcard/backup_contacts.vcf #{path}`
+      #Rename contacts backup
+      `mv #{path}/backup_contacts.vcf #{path}/#{time_stamp}.vcf`
+
+      #Delete file from phone
+      `adb shell rm /mnt/sdcard/backup_contacts.vcf`
+      puts "Contact Backup Succesfull!"
+
+    end
+
+
+  end
+
+  ##RESTORE
+  def list_available_contacts
+    case @@count
+    when 0
+      puts "No devices connected!!"
+    when 2..100
+      puts "Multiple devices connected!!"
+    when 1
+      path = "GAPS/#{@@imei}/contacts"
+      ##Check if directory exists
+      if !File.directory?"#{path}"
+        puts "No Backups found for this device!!!"
+        break
+      end
+      ##Populate list of vcf
+      list = `ls #{path}`.split("\n")
+
+      if list.empty?
+        puts "No Backups found for this device!!!"
+        break
+      end
+
+      ##Display
+      puts "\nAvailable Backups"
+      list.each_with_index {|item, index| puts "#{index} \t #{item}"}
+    end
+  end
+
+  def restore_contacts(arg)
+    case @@count
+    when 0
+      puts "No devices connected!!"
+    when 2..100
+      puts "Multiple devices connected!!"
+    when 1
+      
+      path = "GAPS/#{@@imei}/contacts"
+      ##Populate list of vcf
+      list = `ls #{path}`.split("\n")
+      
+      ##Check if directory exists
+      if !File.directory?"#{path}"
+        puts "No Backups found for this device!!!"
+        break
+      end
+
+      ##Check if arguement is valid
+      if arg.to_i > list.count-1
+        puts "Invalid arguement!"
+      else
+
+        ##Push file
+        `adb push #{path}/#{list[arg.to_i]} /mnt/sdcard/backup_contacts.vcf`
+        puts "Pushed contacts file to device ..."
+
+        #Call push activity
+        push_contacts
+
+        #remove contacts file from device
+        #`adb shell rm /mnt/sdcard/backup_contacts.vcf`
+      end
+
+
+    end
+  end
 end
 
-#Gaps.new.list_available_backups
+#gaps.new.list_available_backups

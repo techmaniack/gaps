@@ -12,7 +12,7 @@ class Encryption
 
   def encrypt_dir(dir)
     #puts "Listing files"
-    @files = Dir.glob("#{dir}/**/*").select{|i| i.end_with?".xml"}#"
+    @files = Dir.glob("#{dir}/**/*").select{|i| i.end_with?".xml"} #"
     #puts @files
     @files.each do |f|
       self.encrypt(f)
